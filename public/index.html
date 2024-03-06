@@ -4,32 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            margin-top: 50px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .message-container {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .message-container p {
+            margin: 0 0 10px 0;
+        }
+
+        #message,
+        #sendBtn {
+            width: calc(100% - 75px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        #sendBtn {
+            width: 75px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #sendBtn:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <h1>Chatting App</h1>
-    <input id="message" type="text" placeholder="Enter your text">
-    <button id="sendBtn">Send</button>
-
-    <div id="messages"></div>
+    <div class="container">
+        <h1>Chatting App</h1>
+        <div class="message-container" id="messages"></div>
+        <input id="message" type="text" placeholder="Enter your message">
+        <button id="sendBtn">Send</button>
+    </div>
 
     <script src="/socket.io/socket.io.js"></script>
-<script>
-  const socket = io();
-  const sendBtn = document.getElementById("sendBtn");
-  const messageInput = document.getElementById("message");
-  const allMessage = document.getElementById("messages");
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const socket = io();
+            const sendBtn = document.getElementById("sendBtn");
+            const messageInput = document.getElementById("message");
+            const allMessage = document.getElementById("messages");
 
+            socket.on('message', (message) => {
+                const p = document.createElement("p");
+                p.innerText = message;
+                allMessage.appendChild(p);
+            });
 
-  socket.on('message', (message) => {
-    const p = document.createElement("p");
-    p.innerText = message;
-    allMessage.appendChild(p);
-  })
-  sendBtn.addEventListener("click", (e) => {
-    const message = messageInput.value;
-    console.log(message);
-    socket.emit('newMessage', message);
-  })
-</script>
+            sendBtn.addEventListener("click", (e) => {
+                const message = messageInput.value;
+                console.log(message);
+                socket.emit('newMessage', message);
+                messageInput.value = ""; // Clear input after sending
+            });
+        });
+    </script>
 </body>
 </html>
